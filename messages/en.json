@@ -1,0 +1,280 @@
+{
+  "site": {
+    "name": "CRPC",
+    "tagline": "Reserve-Backed Self-Adjusting Utility"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "about": "About",
+    "trade": "Trade",
+    "roadmap": "Roadmap",
+    "terms": "Terms"
+  },
+  "geo_notice": {
+    "short": "Not available to residents of Japan.",
+    "long": "This site is intended for global investors only. Not available to residents of Japan."
+  },
+  "footer": {
+    "rights": "All rights reserved.",
+    "disclaimer": "This site is informational only and does not constitute investment advice."
+  },
+  "common": {
+    "last_updated": "Last updated",
+    "loading": "Loading…",
+    "stale": "stale",
+    "ago": "ago"
+  },
+  "home": {
+    "hero_title": "CRPC — Reserve-Backed Self-Adjusting Utility",
+    "hero_subtitle": "A transparency dashboard for the CryptPointToken ecosystem. Theoretical price, point balance, and live market data — updated continuously."
+  },
+  "dashboard": {
+    "v_label": "Theoretical V",
+    "j_label": "Point balance J (USD)",
+    "j_jpy_sub": "from {jpy} JPY",
+    "market_label": "Market (DigiFinex)",
+    "deviation_label": "Deviation",
+    "deviation_above": "market above theoretical",
+    "deviation_below": "market below theoretical",
+    "deviation_equal": "market matches theoretical",
+    "deviation_pending": "Awaiting data",
+    "stale": "stale",
+    "fx_label": "FX (1 USD)",
+    "fx_sub": "JPY per USD · {source}",
+    "formula_label": "Pricing formula",
+    "formula_note": "J is admin-input in JPY and converted to USD via the live FX rate before the formula is applied.",
+    "chart_v": "Theoretical V — 30D",
+    "chart_j": "Point balance J — 30D",
+    "chart_market": "Market price — 30D"
+  },
+  "history": {
+    "loading": "Loading…",
+    "recent_title": "Recent entries",
+    "empty": "No entries in this range.",
+    "col_when": "When",
+    "col_source": "Source",
+    "col_note": "Note",
+    "col_value": {
+      "theoretical-price": "V (USD)",
+      "point-balance": "J (USD)",
+      "market-price": "Price (USD)"
+    },
+    "y_label": {
+      "theoretical-price": "USD",
+      "point-balance": "USD",
+      "market-price": "USD"
+    },
+    "theoretical-price": {
+      "title": "Theoretical price (V) history",
+      "subtitle": "Time-series of the theoretical token price, computed at each J snapshot via V = a(J−b)^c."
+    },
+    "point-balance": {
+      "title": "Point balance (J) history",
+      "subtitle": "Time-series of the total point issuance balance mirrored into the CRPC ecosystem."
+    },
+    "market-price": {
+      "title": "Market price history",
+      "subtitle": "Time-series of the on-exchange CRPC/USDT price, primarily sourced from DigiFinex."
+    }
+  },
+  "about": {
+    "title": "About CRPC",
+    "lede": "CRPC (CryptPointToken) is a utility token whose theoretical value tracks the outstanding loyalty-point liability issued by the ACTIVA merchant network. This page explains how that link works.",
+    "sections": {
+      "what_it_is": {
+        "heading": "What CRPC is",
+        "paragraphs": [
+          "CRPC is an ERC-20 utility token. It is not a security, not a deposit, and not a claim on any company's profits.",
+          "Its purpose is to mirror, on a public blockchain, the outstanding point liability accumulating inside ACTIVA's loyalty-point program. As that point base expands through real merchant activity, the on-chain token's theoretical valuation expands with it."
+        ]
+      },
+      "what_backs": {
+        "heading": "What backs CRPC's value",
+        "paragraphs": [
+          "The reference variable is J — the total outstanding point balance issued by ACTIVA across its merchant network. Every point issued is a future obligation to deliver utility (discounts, settlements, redemptions) at the merchant.",
+          "The theoretical token price V is derived from J via the formula V = a × (J − b)^c. The constants a, b, c are published on the dashboard and snapshotted into each historical record, so past valuations remain reproducible even if parameters are later revised."
+        ]
+      },
+      "how_value_grows": {
+        "heading": "How value grows",
+        "paragraphs": [
+          "When more merchants join ACTIVA or existing merchants issue more points to customers, J grows. Because c is held within a bounded range, V grows monotonically with J, though typically at a diminishing rate.",
+          "Adoption — not speculation — is the input. If point issuance stalls, theoretical price stalls. The dashboard makes the relationship visible and continuous."
+        ]
+      },
+      "convergence": {
+        "heading": "Why on-exchange price converges to V",
+        "paragraphs": [
+          "The Singapore-domiciled CRPC entity actively quotes both sides of the CRPC/USDT order book on DigiFinex near the theoretical price V. When market price diverges from V, arbitrage opportunities push the trade price back toward V.",
+          "This is not a guarantee. Convergence requires sustained market-making capacity and liquidity from external participants. The deviation card on the dashboard surfaces real-time divergence so anyone can audit how tight the band currently is."
+        ]
+      },
+      "reserve_structure": {
+        "heading": "Dual-entity structure",
+        "paragraphs": [
+          "Two entities operate the system. ACTIVA (Japan) runs the merchant-facing loyalty program and is the source of J. CRPC (Singapore) operates the on-chain side: liquidity, market-making, and exchange relationships.",
+          "A reserve pool — composed of stable assets — sits inside the CRPC entity to support redemption capacity for partner-licensed redemption flows. Reserve composition and audit reports will be published on this dashboard in a later phase (see Roadmap)."
+        ]
+      },
+      "limits": {
+        "heading": "Limits and risks",
+        "paragraphs": [
+          "CRPC is not a security, not an investment contract, and confers no dividend, voting right, or guaranteed return. Holding CRPC carries the risk of total loss.",
+          "Theoretical price V is a published reference; it does not promise that the market will trade at V at any moment. Smart-contract risk, exchange risk, regulatory risk, and operational risk all apply. Anyone considering trading CRPC should evaluate these independently."
+        ]
+      }
+    },
+    "risk_callout": "Risk notice: digital assets are volatile. Past performance does not indicate future results. This site is informational only and is not investment advice."
+  },
+  "trade": {
+    "title": "How to trade CRPC",
+    "lede": "CRPC is listed on DigiFinex as CRPC/USDT. This site does not handle trades — it links you to the venue.",
+    "where": {
+      "heading": "Where to trade",
+      "body": "CRPC trades against USDT on DigiFinex. Use the button at the bottom of this page to open the spot market in a new tab."
+    },
+    "steps": {
+      "heading": "How to trade — step by step",
+      "items": [
+        "Create a DigiFinex account at digifinex.com.",
+        "Complete DigiFinex KYC. Approval times vary by jurisdiction.",
+        "Deposit USDT (Tether) to your DigiFinex spot wallet.",
+        "Open the CRPC/USDT spot market and place a market or limit order."
+      ]
+    },
+    "price": {
+      "heading": "About the price you will see",
+      "body": "Our team actively quotes both sides of the CRPC/USDT book near the theoretical price V shown on the dashboard. In practice the on-exchange price tends to move toward V, but at any single moment it can diverge — sometimes significantly. Always check the current deviation before you trade."
+    },
+    "restrictions": {
+      "heading": "Restrictions",
+      "intro": "DigiFinex restricts service in certain jurisdictions. The CRPC site is additionally not available to residents of Japan. The following list is a partial reflection of current DigiFinex restrictions — consult DigiFinex Terms for the authoritative list:",
+      "countries": [
+        "Japan",
+        "United States of America",
+        "Mainland China",
+        "Hong Kong",
+        "Singapore",
+        "Sanctioned jurisdictions"
+      ]
+    },
+    "cta": "Trade on DigiFinex",
+    "disclaimer": "Trading digital assets involves risk including the possible loss of principal. CRPC publishes a theoretical reference price only; it does not promise that you can buy or sell at that price."
+  },
+  "roadmap": {
+    "title": "Roadmap",
+    "lede": "Where CRPC is now, and how the on-chain footprint expands as the system matures.",
+    "status_live": "Live",
+    "status_planned": "Planned",
+    "phase_1": {
+      "when": "Now",
+      "heading": "Phase 1 — Transparency MVP",
+      "bullets": [
+        "Live theoretical price V, point balance J, and market price deviation on the dashboard.",
+        "DigiFinex CRPC/USDT spot market.",
+        "Active market making by the official team toward V.",
+        "Append-only audit log for every admin J insertion."
+      ]
+    },
+    "phase_2": {
+      "when": "Q3 2026",
+      "heading": "Phase 2 — Contract v2 + audit",
+      "bullets": [
+        "Reissue under a modernised, fully audited smart contract.",
+        "Multi-chain native deployment (Ethereum + selected Layer 2 networks).",
+        "Migration path published in advance with snapshot-based reissue.",
+        "Reserve composition dashboard with third-party attestation."
+      ]
+    },
+    "phase_3": {
+      "when": "Q4 2026",
+      "heading": "Phase 3 — DEX integration",
+      "bullets": [
+        "Permissionless swap UI on this site, quoting at the theoretical price.",
+        "Verified reserves with on-chain proof of holdings.",
+        "Liquidity pools managed jointly with the Singapore entity."
+      ]
+    }
+  },
+  "terms": {
+    "title": "Terms of Service",
+    "draft_badge": "Draft",
+    "last_updated": "Last updated",
+    "last_updated_value": "2026-05-23",
+    "draft_disclaimer": "This text is a working draft pending review by legal counsel. The clauses below describe the intended scope; final wording may differ. Eligibility and restriction clauses are binding regardless of draft status.",
+    "sections": {
+      "eligibility": {
+        "heading": "1. Eligibility and geographic restriction",
+        "body": "Access to this site is intended for global investors only. Residents of Japan are prohibited from accessing or using this site, including for the purpose of acquiring CRPC. By using this site you represent that you are not a resident of Japan and are not accessing the site on behalf of a Japan resident. CRPC and its operators reserve the right to restrict access from any jurisdiction."
+      },
+      "no_advice": {
+        "heading": "2. No investment advice",
+        "body": "All content on this site is informational. Nothing on this site constitutes investment, legal, tax, or financial advice, an offer to sell, or a solicitation to buy any token or other asset. You are solely responsible for any decisions made using information presented here."
+      },
+      "no_warranty": {
+        "heading": "3. No warranty",
+        "body": "Data presented on this site (including theoretical price, point balance, and market price) is provided on an \"as is\" and \"as available\" basis. We do not warrant accuracy, completeness, or timeliness. Underlying third-party data sources (e.g., DigiFinex) may fail or be delayed; cached values are clearly labelled as stale when applicable."
+      },
+      "no_solicitation": {
+        "heading": "4. No solicitation, no token sale",
+        "body": "This site does not sell tokens, accept payments, perform KYC, or facilitate trades. All trading happens on third-party venues subject to those venues' own terms and restrictions."
+      },
+      "governing_law": {
+        "heading": "5. Governing law",
+        "body": "These terms will be governed by the laws of Singapore once the CRPC operating entity is formally incorporated and these terms are finalised by counsel. Pending finalisation, this section is non-binding."
+      }
+    }
+  },
+  "admin": {
+    "sign_out": "Sign out",
+    "signing_out": "Signing out…",
+    "login": {
+      "title": "Admin sign-in",
+      "subtitle": "Restricted access. Authorized personnel only.",
+      "email_label": "Email",
+      "password_label": "Password",
+      "sign_in": "Sign in",
+      "signing_in": "Signing in…"
+    },
+    "home": {
+      "title": "Admin",
+      "signed_in_as": "Signed in as {email}"
+    },
+    "latest": {
+      "title": "Latest point balance",
+      "empty": "No point balance recorded yet. Insert one to bootstrap the dashboard.",
+      "insert_first": "Insert first J value",
+      "insert_next": "Insert today's J",
+      "j_label_usd": "J (USD, formula input)",
+      "v_label": "V (theoretical USD)",
+      "legacy": "Legacy row — recorded before JPY conversion was introduced."
+    },
+    "audit": {
+      "title": "Recent activity",
+      "empty": "No activity yet.",
+      "error": "Failed to load audit log: {message}"
+    },
+    "form": {
+      "title": "Insert J value",
+      "subtitle": "Enter today's point issuance balance in JPY. The system converts to USD via the live FX rate and computes the theoretical price V.",
+      "back_to_admin": "Back to admin",
+      "fx_label": "Current JPY/USD rate (live)",
+      "fx_stale": "stale",
+      "fx_source": "Source: {source}",
+      "jpy_label": "Point balance J (JPY)",
+      "jpy_help": "Enter in JPY. Converted to USD on submit. Formula params:",
+      "converted_usd": "Converted J (USD)",
+      "projected_v": "Projected V (USD)",
+      "note_label": "Note (optional)",
+      "note_placeholder": "Source / context for this snapshot…",
+      "save": "Save",
+      "saving": "Saving…",
+      "saved": "Saved. Dashboard cache invalidated.",
+      "invalid_jpy": "J must be a positive JPY amount.",
+      "no_fx": "FX rate is unavailable. Try again in a moment.",
+      "large_jump_warning": "This is a {delta}% change from the previous JPY value. Confirmation required on submit.",
+      "confirm_large_jump": "J changed by {delta}% from the previous value. Proceed?",
+      "server_error": "Server error. Please try again."
+    }
+  }
+}
