@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
@@ -20,12 +21,20 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-bg-elevated bg-bg-base/80 backdrop-blur">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
         <Link
           href="/"
-          className="flex items-center gap-2 font-mono text-lg font-bold tracking-tight text-text-primary"
+          aria-label={`${tSite('name')} home`}
+          className="flex items-center gap-2.5"
         >
-          <span className="text-accent-cyan">{tSite('name')}</span>
+          <Image
+            src="/logo-crpc-horizontal.svg"
+            alt="CryptPoint"
+            width={158}
+            height={34}
+            priority
+            className="h-7 w-auto sm:h-8"
+          />
         </Link>
 
         <nav className="hidden items-center gap-6 md:flex" aria-label="Main">

@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { GeoNotice } from './GeoNotice';
@@ -12,9 +13,19 @@ export function Footer() {
         <GeoNotice variant="inline" className="mb-4" />
 
         <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-xs text-text-muted">
-            © {year} CRPC. {t('footer.rights')}
-          </p>
+          <div className="flex items-center gap-3">
+            <Image
+              src="/logo-crpc-icon.svg"
+              alt=""
+              width={20}
+              height={17}
+              aria-hidden
+              className="opacity-80"
+            />
+            <p className="text-xs text-text-muted">
+              © {year} CRPC. {t('footer.rights')}
+            </p>
+          </div>
 
           <nav className="flex gap-4 text-xs text-text-muted" aria-label="Footer">
             <Link href="/about" className="hover:text-text-primary">

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 
 export const metadata: Metadata = {
@@ -21,11 +22,21 @@ export default async function AboutPage() {
 
   return (
     <article className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
-      <header className="mb-10">
-        <h1 className="font-mono text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
-          {t('title')}
-        </h1>
-        <p className="mt-3 text-base text-text-secondary">{t('lede')}</p>
+      <header className="mb-12 flex flex-col items-start gap-6 sm:flex-row sm:items-center sm:gap-8">
+        <Image
+          src="/logo-crpc-vertical.svg"
+          alt="CryptPoint"
+          width={116}
+          height={119}
+          priority
+          className="h-24 w-auto sm:h-28"
+        />
+        <div>
+          <h1 className="font-mono text-3xl font-bold tracking-tight text-text-primary sm:text-4xl">
+            {t('title')}
+          </h1>
+          <p className="mt-3 text-base text-text-secondary">{t('lede')}</p>
+        </div>
       </header>
 
       <div className="space-y-10">
