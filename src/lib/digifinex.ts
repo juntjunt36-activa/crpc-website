@@ -37,8 +37,18 @@ export async function fetchDigiFinexQuote(
   const res = await fetch(url, {
     signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
     next: { revalidate: 60, tags: ['market-price'] },
-    headers: { accept: 'application/json' },
+    headers: {
+      accept: 'application/json',
+      'user-agent':
+        'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36',
+    },
   });
+
+  if (res.status === 403 || res.status === 451) {
+    throw new Error(
+      `DigiFinex blocked the request (HTTP ${res.status}). Vercel IPs may be region-restricted.`,
+    );
+  }
 
   if (!res.ok) {
     throw new Error(`DigiFinex HTTP ${res.status}`);
