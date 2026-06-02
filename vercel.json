@@ -3,11 +3,11 @@
   "crons": [
     {
       "path": "/api/market-price?refresh=1",
-      "schedule": "* * * * *"
+      "schedule": "0 0 * * *"
     },
     {
       "path": "/api/fx-rate/latest?refresh=1",
-      "schedule": "*/10 * * * *"
+      "schedule": "30 0 * * *"
     }
   ]
 }
