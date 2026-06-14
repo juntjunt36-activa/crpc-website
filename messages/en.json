@@ -10,10 +10,6 @@
     "roadmap": "Roadmap",
     "terms": "Terms"
   },
-  "geo_notice": {
-    "short": "Not available to residents of Japan.",
-    "long": "This site is intended for global investors only. Not available to residents of Japan."
-  },
   "footer": {
     "rights": "All rights reserved.",
     "disclaimer": "This site is informational only and does not constitute investment advice."
@@ -29,10 +25,10 @@
     "hero_subtitle": "A transparency dashboard for the CryptPointToken ecosystem. Theoretical price, point balance, and live market data — updated continuously."
   },
   "dashboard": {
-    "v_label": "Theoretical V",
-    "j_label": "Point balance J (USD)",
+    "v_label": "Theoretical Price V",
+    "j_label": "Point issued balance J (USD)",
     "j_jpy_sub": "from {jpy} JPY",
-    "market_label": "Market (DigiFinex)",
+    "market_label": "Market Price (DigiFinex)",
     "deviation_label": "Deviation",
     "deviation_above": "market above theoretical",
     "deviation_below": "market below theoretical",
@@ -43,9 +39,9 @@
     "fx_sub": "JPY per USD · {source}",
     "formula_label": "Pricing formula",
     "formula_note": "J is admin-input in JPY and converted to USD via the live FX rate before the formula is applied.",
-    "chart_v": "Theoretical V — 30D",
-    "chart_j": "Point balance J — 30D",
-    "chart_market": "Market price — 30D"
+    "chart_v": "Theoretical Price V — 30D",
+    "chart_j": "Point issued balance J — 30D",
+    "chart_market": "Market Price — 30D"
   },
   "history": {
     "loading": "Loading…",
