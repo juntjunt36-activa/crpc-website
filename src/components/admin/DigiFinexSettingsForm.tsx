@@ -5,10 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils';
 
-export type JobName = 'buy1' | 'buy2' | 'sell1' | 'sell2';
-
-export interface CronConfig {
-  name: JobName;
+export interface DigiFinexSettings {
   symbol: string;
   amount: number;
   price: number;
@@ -17,20 +14,11 @@ export interface CronConfig {
   updated_at: string;
 }
 
-interface CronConfigFormProps {
-  initial: CronConfig;
+interface SettingsFormProps {
+  initial: DigiFinexSettings;
 }
 
-const side = (name: JobName): 'buy' | 'sell' =>
-  name.startsWith('buy') ? 'buy' : 'sell';
-
-const account = (name: JobName): 1 | 2 =>
-  name.endsWith('1') ? 1 : 2;
-
-const activeCounter = (name: JobName): 'coupon_issued' | 'coupon_used' =>
-  side(name) === 'buy' ? 'coupon_issued' : 'coupon_used';
-
-export function CronConfigForm({ initial }: CronConfigFormProps) {
+export function DigiFinexSettingsForm({ initial }: SettingsFormProps) {
   const t = useTranslations('admin.cron');
   const router = useRouter();
 
@@ -42,12 +30,9 @@ export function CronConfigForm({ initial }: CronConfigFormProps) {
     coupon_used: String(initial.coupon_used),
   });
   const [busy, setBusy] = useState(false);
-  const [message, setMessage] = useState<{ kind: 'ok' | 'err'; text: string } | null>(
-    null,
-  );
-  const [testResult, setTestResult] = useState<string | null>(null);
-
-  const active = activeCounter(initial.name);
+  const [message, setMessage] = useState<
+    { kind: 'ok' | 'err'; text: string } | null
+  >(null);
 
   const set = (k: keyof typeof form) => (v: string) =>
     setForm((f) => ({ ...f, [k]: v }));
@@ -60,7 +45,6 @@ export function CronConfigForm({ initial }: CronConfigFormProps) {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
-        name: initial.name,
         symbol: form.symbol.trim().toLowerCase(),
         amount: Number(form.amount),
         price: Number(form.price),
@@ -79,45 +63,24 @@ export function CronConfigForm({ initial }: CronConfigFormProps) {
     router.refresh();
   };
 
-  const onTest = async () => {
-    if (busy) return;
-    setBusy(true);
-    setTestResult(null);
-    setMessage(null);
-    const res = await fetch('/api/admin/digifinex-order', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ job: initial.name, dry_run: true }),
-    });
-    const text = await res.text();
-    setTestResult(`HTTP ${res.status}\n${text}`);
-    setBusy(false);
-  };
-
-  const sd = side(initial.name);
-  const acct = account(initial.name);
-  const sideTone = sd === 'buy' ? 'text-signal-success' : 'text-signal-danger';
-
   return (
     <div className="rounded-lg border border-bg-elevated bg-bg-card p-5">
       <div className="mb-4 flex items-baseline justify-between gap-3">
-        <div>
-          <h2 className="font-mono text-lg font-semibold text-text-primary">
-            <span className={cn(sideTone, 'uppercase')}>{sd}</span>
-            <span className="ml-1 text-text-muted">/ account {acct}</span>
-          </h2>
-          <p className="mt-0.5 text-[11px] text-text-muted">
-            cron name: <span className="font-mono">{initial.name}</span> · counter:{' '}
-            <span className="font-mono text-accent-cyan">{active}</span>
-          </p>
-        </div>
-        <span className="text-[10px] text-text-muted" suppressHydrationWarning>
+        <h2 className="font-mono text-base font-semibold text-text-primary">
+          {t('settings_title')}
+        </h2>
+        <span
+          className="text-[10px] text-text-muted"
+          suppressHydrationWarning
+        >
           {new Date(initial.updated_at).toUTCString().slice(5, 22)}
         </span>
       </div>
 
+      <p className="mb-4 text-xs text-text-muted">{t('settings_intro')}</p>
+
       <div className="space-y-3">
-        <Field label={t('symbol')}>
+        <Field label="symbol">
           <input
             type="text"
             value={form.symbol}
@@ -126,8 +89,9 @@ export function CronConfigForm({ initial }: CronConfigFormProps) {
             className={input}
           />
         </Field>
+
         <div className="grid grid-cols-2 gap-3">
-          <Field label={t('amount')}>
+          <Field label="amount">
             <input
               type="number"
               step="any"
@@ -138,7 +102,7 @@ export function CronConfigForm({ initial }: CronConfigFormProps) {
               className={input}
             />
           </Field>
-          <Field label={t('price')}>
+          <Field label="price">
             <input
               type="number"
               step="any"
@@ -150,11 +114,9 @@ export function CronConfigForm({ initial }: CronConfigFormProps) {
             />
           </Field>
         </div>
+
         <div className="grid grid-cols-2 gap-3">
-          <Field
-            label="coupon_issued"
-            highlight={active === 'coupon_issued'}
-          >
+          <Field label="coupon_issued" hint={t('coupon_issued_hint')}>
             <input
               type="number"
               min={0}
@@ -165,10 +127,7 @@ export function CronConfigForm({ initial }: CronConfigFormProps) {
               className={input}
             />
           </Field>
-          <Field
-            label="coupon_used"
-            highlight={active === 'coupon_used'}
-          >
+          <Field label="coupon_used" hint={t('coupon_used_hint')}>
             <input
               type="number"
               min={0}
@@ -196,37 +155,17 @@ export function CronConfigForm({ initial }: CronConfigFormProps) {
         </p>
       )}
 
-      <div className="mt-4 flex gap-2">
-        <button
-          type="button"
-          onClick={() => void onSave()}
-          disabled={busy}
-          className={cn(
-            'flex-1 rounded-md bg-accent-cyan px-3 py-2 text-xs font-semibold text-bg-base transition-opacity',
-            'disabled:cursor-not-allowed disabled:opacity-50 hover:opacity-90',
-          )}
-        >
-          {busy ? '…' : t('save')}
-        </button>
-        <button
-          type="button"
-          onClick={() => void onTest()}
-          disabled={busy}
-          className={cn(
-            'rounded-md border border-bg-elevated px-3 py-2 text-xs text-text-secondary',
-            'disabled:cursor-not-allowed disabled:opacity-50 hover:text-text-primary',
-          )}
-          title={t('test_hint')}
-        >
-          {t('dry_run')}
-        </button>
-      </div>
-
-      {testResult && (
-        <pre className="mt-3 max-h-48 overflow-auto rounded-md bg-bg-base p-2 text-[10px] leading-snug text-text-muted">
-          {testResult}
-        </pre>
-      )}
+      <button
+        type="button"
+        onClick={() => void onSave()}
+        disabled={busy}
+        className={cn(
+          'mt-4 w-full rounded-md bg-accent-cyan px-3 py-2 text-xs font-semibold text-bg-base transition-opacity',
+          'disabled:cursor-not-allowed disabled:opacity-50 hover:opacity-90',
+        )}
+      >
+        {busy ? '…' : t('save')}
+      </button>
     </div>
   );
 }
@@ -234,23 +173,21 @@ export function CronConfigForm({ initial }: CronConfigFormProps) {
 function Field({
   label,
   children,
-  highlight,
+  hint,
 }: {
   label: string;
   children: React.ReactNode;
-  highlight?: boolean;
+  hint?: string;
 }) {
   return (
     <label className="block space-y-1">
-      <span
-        className={cn(
-          'text-[10px] uppercase tracking-wide',
-          highlight ? 'text-accent-cyan' : 'text-text-muted',
-        )}
-      >
+      <span className="text-[10px] uppercase tracking-wide text-text-muted">
         {label}
       </span>
       {children}
+      {hint && (
+        <span className="block text-[10px] text-text-muted">{hint}</span>
+      )}
     </label>
   );
 }

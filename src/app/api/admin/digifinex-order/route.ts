@@ -93,14 +93,21 @@ function isSingle(b: RequestBody): b is SingleBody {
   return typeof (b as SingleBody).type === 'string';
 }
 
-interface ConfigRow {
-  name: JobName;
+interface SettingsRow {
   symbol: string;
   amount: number;
   price: number;
   coupon_issued: number;
   coupon_used: number;
 }
+
+// Which counter each cron *reads*. Sell* additionally decrement; buy* do not.
+const COUNTER_FOR_JOB: Record<JobName, 'coupon_issued' | 'coupon_used'> = {
+  buy1: 'coupon_issued',
+  buy2: 'coupon_used',
+  sell1: 'coupon_used',
+  sell2: 'coupon_issued',
+};
 
 export async function POST(req: Request) {
   // 1. Parse body first so we know whether dry_run is requested.
@@ -171,27 +178,43 @@ export async function POST(req: Request) {
     dryRun = body.dry_run === true;
     const side = jobName.startsWith('buy') ? 'buy' : 'sell';
     accountNumber = jobName.endsWith('1') ? 1 : 2;
+    const counterField = COUNTER_FOR_JOB[jobName];
     market = 'spot';
     mode = 'single';
 
-    // Atomic decrement (or plain read on dry_run).
-    let config: ConfigRow | null = null;
+    // Singleton settings. On dry-run we read directly (no mutation).
+    // On real runs we call the RPC, which decrements only for sell*.
+    let settings: SettingsRow | null = null;
     if (dryRun) {
       const { data, error } = await admin
-        .from('digifinex_cron_config')
-        .select('*')
-        .eq('name', jobName)
+        .from('digifinex_settings')
+        .select('symbol, amount, price, coupon_issued, coupon_used')
+        .eq('id', 1)
         .maybeSingle();
       if (error) {
         return NextResponse.json({ error: error.message }, { status: 500 });
       }
       if (!data) {
         return NextResponse.json(
-          { error: `Cron config row missing for ${jobName}` },
+          { error: 'digifinex_settings row missing (apply migration 0005)' },
           { status: 500 },
         );
       }
-      config = data as ConfigRow;
+      settings = data as SettingsRow;
+      // On dry run, still respect the counter gate (so the operator can see
+      // when a cron would skip), but do not mutate.
+      if ((settings[counterField] ?? 0) <= 0) {
+        return NextResponse.json(
+          {
+            job: jobName,
+            skipped: true,
+            reason: 'counter_at_zero',
+            counter: counterField,
+            dry_run: true,
+          },
+          { status: 200 },
+        );
+      }
     } else {
       const { data, error } = await admin.rpc('dfx_consume_cron_counter', {
         _job: jobName,
@@ -199,7 +222,7 @@ export async function POST(req: Request) {
       if (error) {
         return NextResponse.json({ error: error.message }, { status: 500 });
       }
-      const rows = (data ?? []) as ConfigRow[];
+      const rows = (data ?? []) as SettingsRow[];
       if (rows.length === 0) {
         // Counter was already 0 — log a skip and exit early.
         await admin.from('digifinex_order_log').insert({
@@ -220,18 +243,16 @@ export async function POST(req: Request) {
             job: jobName,
             skipped: true,
             reason: 'counter_at_zero',
-            counter: side === 'buy' ? 'coupon_issued' : 'coupon_used',
+            counter: counterField,
           },
           { status: 200 },
         );
       }
-      config = rows[0];
+      settings = rows[0];
     }
 
-    couponRemaining =
-      side === 'buy' ? config.coupon_issued : config.coupon_used;
-
-    symbol = config.symbol;
+    couponRemaining = settings[counterField];
+    symbol = settings.symbol;
     try {
       creds = getDigiFinexCreds(accountNumber);
     } catch (err) {
@@ -245,8 +266,8 @@ export async function POST(req: Request) {
       market,
       symbol,
       type: side,
-      amount: Number(config.amount),
-      price: Number(config.price),
+      amount: Number(settings.amount),
+      price: Number(settings.price),
       post_only: false,
       dry_run: dryRun,
     };
