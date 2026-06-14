@@ -238,7 +238,11 @@
     },
     "home": {
       "title": "Admin",
-      "signed_in_as": "Signed in as {email}"
+      "signed_in_as": "Signed in as {email}",
+      "link_point_balance": "Point balance (J) input",
+      "link_point_balance_hint": "Record today's JPY point balance; converted to USD on save.",
+      "link_cron": "DigiFinex cron config",
+      "link_cron_hint": "Edit buy1 / buy2 / sell1 / sell2 parameters and run dry-runs."
     },
     "latest": {
       "title": "Latest point balance",
@@ -253,6 +257,21 @@
       "title": "Recent activity",
       "empty": "No activity yet.",
       "error": "Failed to load audit log: {message}"
+    },
+    "cron": {
+      "title": "DigiFinex cron configuration",
+      "subtitle": "Four scheduled order jobs feed off these rows. buy* crons consume coupon_issued, sell* crons consume coupon_used (decrement by 1 per execution; 0 = skip).",
+      "back_to_admin": "Back to admin",
+      "symbol": "symbol",
+      "amount": "amount",
+      "price": "price",
+      "save": "Save",
+      "saved": "Saved.",
+      "save_failed": "Save failed.",
+      "dry_run": "Dry-run",
+      "test_hint": "Preview the request without sending to DigiFinex.",
+      "recent_runs": "Recent runs (last 20)",
+      "no_runs": "No cron runs yet."
     },
     "form": {
       "title": "Insert J value",
