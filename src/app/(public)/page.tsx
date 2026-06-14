@@ -149,6 +149,20 @@ export default async function HomePage() {
     splitIdx >= 0 ? fullTitle.slice(0, splitIdx + 1) : fullTitle;
   const titleTail = splitIdx >= 0 ? fullTitle.slice(splitIdx + 2) : '';
 
+  // Mobile-only 3-line breakdown of the tail, derived from punctuation:
+  //   "A Reserve-Backed," / "Self-Adjusting" / "Utility Token"
+  // Falls back to a single line if the structure changes unexpectedly.
+  const mobileLines: string[] = (() => {
+    if (!titleTail) return [];
+    const commaIdx = titleTail.indexOf(', ');
+    if (commaIdx < 0) return [titleTail];
+    const first = titleTail.slice(0, commaIdx + 1); // keep the comma
+    const rest = titleTail.slice(commaIdx + 2);
+    const spaceIdx = rest.indexOf(' ');
+    if (spaceIdx < 0) return [first, rest];
+    return [first, rest.slice(0, spaceIdx), rest.slice(spaceIdx + 1)];
+  })();
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <section className="mb-10">
@@ -156,14 +170,29 @@ export default async function HomePage() {
           <span className="block text-3xl sm:text-4xl lg:text-5xl">
             {titleHead}
           </span>
+
+          {/* Mobile: stack the tail as multiple lines */}
+          {mobileLines.length > 0 && (
+            <span className="mt-1 block text-2xl leading-tight sm:hidden">
+              {mobileLines.map((line, i) => (
+                <span key={i} className="block">
+                  {line}
+                </span>
+              ))}
+            </span>
+          )}
+
+          {/* sm and above: single-line tail with auto-fit shrinking */}
           {titleTail && (
-            <FitNumber
-              maxFontSize={56}
-              minFontSize={10}
-              className="mt-1 font-mono"
-            >
-              {titleTail}
-            </FitNumber>
+            <span className="hidden sm:block">
+              <FitNumber
+                maxFontSize={56}
+                minFontSize={14}
+                className="mt-1 font-mono"
+              >
+                {titleTail}
+              </FitNumber>
+            </span>
           )}
         </h1>
         <p className="mt-4 max-w-3xl text-base text-text-secondary sm:text-lg">
