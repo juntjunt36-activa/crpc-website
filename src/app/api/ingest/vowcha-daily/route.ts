@@ -24,24 +24,11 @@ function jstYesterday(): string {
   return jst.toISOString().slice(0, 10);
 }
 
-const AMOUNT_FIELD_CANDIDATES = [
-  'coupon_amount_jpy',
-  'coupon_amount',
-  'coupon_issued_jpy',
-  'coupon_issued',
-  'coupon_issued_amount',
-  'issued_amount',
-  'total_issued_jpy',
-  'total_issued',
-  'amount',
-  'total',
-];
-
-const DATE_FIELD_CANDIDATES = ['date', 'day', 'target_date', 'report_date'];
-
-// Best-effort walk of vowcha's response shape. The raw payload is always
-// stored in vowcha_ingest_log so we can refine this once the actual schema
-// is observed.
+// Extract the cumulative outstanding JPY balance from vowcha's response.
+// Confirmed schema (2026-06-14):
+//   { data: [ { date: "YYYY-MM-DD", amount: { remaining: <number>, ... }, ... } ] }
+// `amount.remaining` is the end-of-day cumulative outstanding balance, which
+// is what CRPC's V = a(J - b)^c uses as J.
 function extractCouponAmount(
   payload: unknown,
   targetDate: string,
@@ -49,43 +36,27 @@ function extractCouponAmount(
   if (!payload || typeof payload !== 'object') {
     return { amount: null, fieldName: null };
   }
+  const data = (payload as { data?: unknown }).data;
+  if (!Array.isArray(data)) {
+    return { amount: null, fieldName: null };
+  }
+  const row = data.find((r) => {
+    if (!r || typeof r !== 'object') return false;
+    const d = (r as { date?: unknown }).date;
+    return typeof d === 'string' && d.slice(0, 10) === targetDate;
+  }) as { amount?: { remaining?: unknown } } | undefined;
+  if (!row) return { amount: null, fieldName: null };
 
-  const arrayPaths: ((p: Record<string, unknown>) => unknown)[] = [
-    (p) => p.daily,
-    (p) => p.summary,
-    (p) => (p.data as Record<string, unknown> | undefined)?.summary,
-    (p) => (p.data as Record<string, unknown> | undefined)?.daily,
-    (p) => p.data,
-    (p) => p.reports,
-    (p) => p,
-  ];
-
-  for (const getArr of arrayPaths) {
-    const arr = getArr(payload as Record<string, unknown>);
-    if (!Array.isArray(arr)) continue;
-    const row = arr.find((r) => {
-      if (!r || typeof r !== 'object') return false;
-      for (const k of DATE_FIELD_CANDIDATES) {
-        const v = (r as Record<string, unknown>)[k];
-        if (typeof v === 'string' && v.slice(0, 10) === targetDate) return true;
-      }
-      return false;
-    }) as Record<string, unknown> | undefined;
-    if (!row) continue;
-    for (const name of AMOUNT_FIELD_CANDIDATES) {
-      const v = row[name];
-      if (typeof v === 'number' && Number.isFinite(v) && v >= 0) {
-        return { amount: v, fieldName: name };
-      }
-      if (typeof v === 'string') {
-        const num = Number(v.replace(/,/g, ''));
-        if (Number.isFinite(num) && num >= 0) {
-          return { amount: num, fieldName: name };
-        }
-      }
+  const remaining = row.amount?.remaining;
+  if (typeof remaining === 'number' && Number.isFinite(remaining) && remaining >= 0) {
+    return { amount: remaining, fieldName: 'amount.remaining' };
+  }
+  if (typeof remaining === 'string') {
+    const num = Number(remaining.replace(/,/g, ''));
+    if (Number.isFinite(num) && num >= 0) {
+      return { amount: num, fieldName: 'amount.remaining' };
     }
   }
-
   return { amount: null, fieldName: null };
 }
 
