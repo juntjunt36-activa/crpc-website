@@ -163,6 +163,13 @@ export default async function HomePage() {
     return [first, rest.slice(0, spaceIdx), rest.slice(spaceIdx + 1)];
   })();
 
+  // Split the lede at the first sentence boundary so the second sentence
+  // starts on its own line on every viewport.
+  const lede = t('hero_subtitle');
+  const sentenceIdx = lede.indexOf('. ');
+  const lede1 = sentenceIdx >= 0 ? lede.slice(0, sentenceIdx + 1) : lede;
+  const lede2 = sentenceIdx >= 0 ? lede.slice(sentenceIdx + 2) : '';
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <section className="mb-10">
@@ -196,7 +203,8 @@ export default async function HomePage() {
           )}
         </h1>
         <p className="mt-4 max-w-3xl text-base text-text-secondary sm:text-lg">
-          {t('hero_subtitle')}
+          <span className="block">{lede1}</span>
+          {lede2 && <span className="mt-1 block">{lede2}</span>}
         </p>
       </section>
 
