@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { formatUSD } from '@/lib/format';
 import { cn } from '@/lib/utils';
 
 export interface DigiFinexSettings {
@@ -16,16 +17,21 @@ export interface DigiFinexSettings {
 
 interface SettingsFormProps {
   initial: DigiFinexSettings;
+  latestV: number | null;
+  latestVRecordedAt: string | null;
 }
 
-export function DigiFinexSettingsForm({ initial }: SettingsFormProps) {
+export function DigiFinexSettingsForm({
+  initial,
+  latestV,
+  latestVRecordedAt,
+}: SettingsFormProps) {
   const t = useTranslations('admin.cron');
   const router = useRouter();
 
   const [form, setForm] = useState({
     symbol: initial.symbol,
     amount: String(initial.amount),
-    price: String(initial.price),
     coupon_issued: String(initial.coupon_issued),
     coupon_used: String(initial.coupon_used),
   });
@@ -47,7 +53,6 @@ export function DigiFinexSettingsForm({ initial }: SettingsFormProps) {
       body: JSON.stringify({
         symbol: form.symbol.trim().toLowerCase(),
         amount: Number(form.amount),
-        price: Number(form.price),
         coupon_issued: Number(form.coupon_issued),
         coupon_used: Number(form.coupon_used),
       }),
@@ -102,17 +107,30 @@ export function DigiFinexSettingsForm({ initial }: SettingsFormProps) {
               className={input}
             />
           </Field>
-          <Field label="price">
-            <input
-              type="number"
-              step="any"
-              min={0}
-              value={form.price}
-              onChange={(e) => set('price')(e.target.value)}
-              disabled={busy}
-              className={input}
-            />
-          </Field>
+          <ReadOnlyField
+            label={t('price_auto_label')}
+            hint={t('price_auto_hint')}
+          >
+            {latestV !== null ? (
+              <>
+                <span className="font-mono text-sm text-text-primary">
+                  {formatUSD(latestV)}
+                </span>
+                {latestVRecordedAt && (
+                  <span
+                    className="ml-2 text-[10px] text-text-muted"
+                    suppressHydrationWarning
+                  >
+                    {new Date(latestVRecordedAt).toUTCString().slice(5, 22)}
+                  </span>
+                )}
+              </>
+            ) : (
+              <span className="text-xs text-signal-warning">
+                {t('price_no_v')}
+              </span>
+            )}
+          </ReadOnlyField>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
@@ -189,6 +207,30 @@ function Field({
         <span className="block text-[10px] text-text-muted">{hint}</span>
       )}
     </label>
+  );
+}
+
+function ReadOnlyField({
+  label,
+  children,
+  hint,
+}: {
+  label: string;
+  children: React.ReactNode;
+  hint?: string;
+}) {
+  return (
+    <div className="space-y-1">
+      <span className="text-[10px] uppercase tracking-wide text-accent-cyan">
+        {label}
+      </span>
+      <div className="flex min-h-[34px] items-center rounded-md border border-dashed border-bg-elevated bg-bg-base/50 px-2.5 py-1.5">
+        {children}
+      </div>
+      {hint && (
+        <span className="block text-[10px] text-text-muted">{hint}</span>
+      )}
+    </div>
   );
 }
 

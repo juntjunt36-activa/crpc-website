@@ -287,6 +287,49 @@ export async function POST(req: Request) {
 
     couponRemaining = settings[counterField];
     symbol = settings.symbol;
+
+    // Always price the order at the latest Theoretical V (the same value the
+    // public dashboard shows). settings.price is ignored — V is the
+    // authoritative reference. If no J has ever been recorded the cron stays
+    // a no-op so we never send an unanchored order.
+    const { data: latestPb, error: latestPbErr } = await admin
+      .from('point_balance_history')
+      .select('v_value')
+      .order('recorded_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (latestPbErr) {
+      return NextResponse.json(
+        { error: latestPbErr.message },
+        { status: 500 },
+      );
+    }
+    if (!latestPb || latestPb.v_value == null) {
+      await admin.from('digifinex_order_log').insert({
+        mode: 'skipped',
+        request_body: body,
+        digifinex_url: 'n/a',
+        response_status: null,
+        response_code: null,
+        response_body: null,
+        duration_ms: 0,
+        error: 'no_v_available',
+        job_name: jobName,
+        account: accountNumber,
+        coupon_remaining: couponRemaining,
+      });
+      return NextResponse.json(
+        {
+          job: jobName,
+          skipped: true,
+          reason: 'no_v_available',
+          hint: 'Insert a J value on /admin/point-balance before enabling cron.',
+        },
+        { status: 200 },
+      );
+    }
+    const latestV = Number(latestPb.v_value);
+
     try {
       creds = getDigiFinexCreds(accountNumber);
     } catch (err) {
@@ -301,7 +344,7 @@ export async function POST(req: Request) {
       symbol,
       type: side,
       amount: Number(settings.amount),
-      price: Number(settings.price),
+      price: latestV,
       post_only: false,
       dry_run: dryRun,
     };

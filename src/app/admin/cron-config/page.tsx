@@ -33,24 +33,33 @@ export default async function CronConfigPage() {
   const supabase = await createSupabaseServerClient();
   const admin = createSupabaseAdminClient();
 
-  const [{ data: settings }, { data: logRows }] = await Promise.all([
-    supabase
-      .from('digifinex_settings')
-      .select(
-        'symbol, amount, price, coupon_issued, coupon_used, cron_enabled, updated_at',
-      )
-      .eq('id', 1)
-      .maybeSingle(),
-    admin
-      .from('digifinex_order_log')
-      .select(
-        'id, occurred_at, job_name, account, mode, response_code, order_id, error, coupon_remaining',
-      )
-      .order('occurred_at', { ascending: false })
-      .limit(20),
-  ]);
+  const [{ data: settings }, { data: latestPb }, { data: logRows }] =
+    await Promise.all([
+      supabase
+        .from('digifinex_settings')
+        .select(
+          'symbol, amount, price, coupon_issued, coupon_used, cron_enabled, updated_at',
+        )
+        .eq('id', 1)
+        .maybeSingle(),
+      supabase
+        .from('point_balance_history')
+        .select('v_value, recorded_at')
+        .order('recorded_at', { ascending: false })
+        .limit(1)
+        .maybeSingle(),
+      admin
+        .from('digifinex_order_log')
+        .select(
+          'id, occurred_at, job_name, account, mode, response_code, order_id, error, coupon_remaining',
+        )
+        .order('occurred_at', { ascending: false })
+        .limit(20),
+    ]);
 
   const row = settings ? (settings as SettingsRow) : null;
+  const latestV = latestPb?.v_value != null ? Number(latestPb.v_value) : null;
+  const latestVRecordedAt = latestPb?.recorded_at ?? null;
   const logs = (logRows ?? []) as RecentLogRow[];
 
   return (
@@ -73,7 +82,11 @@ export default async function CronConfigPage() {
         {row ? (
           <>
             <CronMasterToggle initialEnabled={row.cron_enabled} />
-            <DigiFinexSettingsForm initial={row} />
+            <DigiFinexSettingsForm
+              initial={row}
+              latestV={latestV}
+              latestVRecordedAt={latestVRecordedAt}
+            />
           </>
         ) : (
           <div
