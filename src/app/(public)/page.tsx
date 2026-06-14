@@ -6,6 +6,7 @@ import { fetchJpyUsdRate } from '@/lib/fx';
 import { getCurrentPriceParams } from '@/lib/pricing';
 import { DashboardCards } from '@/components/dashboard/DashboardCards';
 import { MiniCharts } from '@/components/dashboard/MiniCharts';
+import { FitNumber } from '@/components/dashboard/FitNumber';
 import type {
   FxRatePayload,
   MarketPricePayload,
@@ -142,13 +143,30 @@ export default async function HomePage() {
 
   const params = getCurrentPriceParams();
 
+  const fullTitle = t('hero_title');
+  const splitIdx = fullTitle.indexOf(': ');
+  const titleHead =
+    splitIdx >= 0 ? fullTitle.slice(0, splitIdx + 1) : fullTitle;
+  const titleTail = splitIdx >= 0 ? fullTitle.slice(splitIdx + 2) : '';
+
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-      <section className="mb-10 max-w-3xl">
-        <h1 className="font-mono text-3xl font-bold tracking-tight text-text-primary sm:text-4xl lg:text-5xl">
-          {t('hero_title')}
+      <section className="mb-10">
+        <h1 className="font-mono font-bold tracking-tight text-text-primary">
+          <span className="block text-3xl sm:text-4xl lg:text-5xl">
+            {titleHead}
+          </span>
+          {titleTail && (
+            <FitNumber
+              maxFontSize={56}
+              minFontSize={10}
+              className="mt-1 font-mono"
+            >
+              {titleTail}
+            </FitNumber>
+          )}
         </h1>
-        <p className="mt-4 text-base text-text-secondary sm:text-lg">
+        <p className="mt-4 max-w-3xl text-base text-text-secondary sm:text-lg">
           {t('hero_subtitle')}
         </p>
       </section>
