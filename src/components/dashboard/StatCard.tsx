@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils';
+import { FitNumber } from './FitNumber';
 
 interface StatCardProps {
   label: string;
@@ -32,14 +33,16 @@ export function StatCard({
         </span>
         {badge}
       </div>
-      <div
+      <FitNumber
+        maxFontSize={30}
+        minFontSize={14}
         className={cn(
-          'mt-3 font-mono text-2xl tracking-tight text-text-primary sm:text-3xl',
+          'mt-3 font-mono tracking-tight text-text-primary',
           valueClassName,
         )}
       >
         {value}
-      </div>
+      </FitNumber>
       {sublabel && <div className="mt-1 text-xs text-text-muted">{sublabel}</div>}
       {footer && <div className="mt-3">{footer}</div>}
     </div>
