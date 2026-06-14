@@ -1,6 +1,6 @@
 export const siteConfig = {
   name: 'CRPC',
-  title: 'CRPC — Reserve-Backed Self-Adjusting Utility',
+  title: 'CRPC: A Reserve-Backed, Self-Adjusting Utility Token',
   description:
     'CRPC (CryptPointToken) transparency dashboard for global investors. View theoretical price, point balance, and DigiFinex market price in real time.',
   url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://crpc.example.com',

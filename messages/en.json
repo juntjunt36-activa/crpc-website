@@ -1,7 +1,7 @@
 {
   "site": {
     "name": "CRPC",
-    "tagline": "Reserve-Backed Self-Adjusting Utility"
+    "tagline": "A Reserve-Backed, Self-Adjusting Utility Token"
   },
   "nav": {
     "dashboard": "Dashboard",
@@ -21,7 +21,7 @@
     "ago": "ago"
   },
   "home": {
-    "hero_title": "CRPC — Reserve-Backed Self-Adjusting Utility",
+    "hero_title": "CRPC: A Reserve-Backed, Self-Adjusting Utility Token",
     "hero_subtitle": "A transparency dashboard for the CryptPointToken ecosystem. Theoretical price, point balance, and live market data — updated continuously."
   },
   "dashboard": {
