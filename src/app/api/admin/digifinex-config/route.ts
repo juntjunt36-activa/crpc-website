@@ -10,6 +10,7 @@ interface PatchBody {
   price?: number;
   coupon_issued?: number;
   coupon_used?: number;
+  cron_enabled?: boolean;
 }
 
 export async function POST(req: Request) {
@@ -41,6 +42,9 @@ export async function POST(req: Request) {
     patch.coupon_issued = Math.max(0, Math.floor(body.coupon_issued));
   if (typeof body.coupon_used === 'number' && Number.isFinite(body.coupon_used))
     patch.coupon_used = Math.max(0, Math.floor(body.coupon_used));
+  if (typeof body.cron_enabled === 'boolean')
+    (patch as Record<string, boolean | string | number | null>).cron_enabled =
+      body.cron_enabled;
 
   const { data, error } = await supabase
     .from('digifinex_settings')

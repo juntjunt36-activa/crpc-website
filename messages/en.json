@@ -259,6 +259,14 @@
       "error": "Failed to load audit log: {message}"
     },
     "cron": {
+      "toggle_on_title": "Cron is LIVE",
+      "toggle_on_desc": "Scheduled requests will place real DigiFinex orders.",
+      "toggle_off_title": "Cron is OFF",
+      "toggle_off_desc": "Scheduled requests will be logged as skipped; no DigiFinex orders are sent and counters are not decremented.",
+      "toggle_button_on": "Turn ON",
+      "toggle_button_off": "Turn OFF",
+      "toggle_confirm_on": "Turning the master switch ON will allow scheduled cron requests to place REAL DigiFinex orders against accounts 1 and 2. Proceed?",
+      "toggle_failed": "Toggle failed.",
       "title": "DigiFinex cron configuration",
       "subtitle": "Shared parameters for the four cron jobs. buy1/sell2 read coupon_issued, buy2/sell1 read coupon_used. Only sell1 and sell2 decrement their counter; buy1 and buy2 fire while the counter is > 0 without changing it.",
       "back_to_admin": "Back to admin",

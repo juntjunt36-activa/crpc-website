@@ -8,6 +8,7 @@ import {
   type DigiFinexSettings,
 } from '@/components/admin/DigiFinexSettingsForm';
 import { CronDryRunPanel } from '@/components/admin/CronDryRunPanel';
+import { CronMasterToggle } from '@/components/admin/CronMasterToggle';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,6 +24,10 @@ interface RecentLogRow {
   coupon_remaining: number | null;
 }
 
+interface SettingsRow extends DigiFinexSettings {
+  cron_enabled: boolean;
+}
+
 export default async function CronConfigPage() {
   const t = await getTranslations('admin.cron');
   const supabase = await createSupabaseServerClient();
@@ -31,7 +36,9 @@ export default async function CronConfigPage() {
   const [{ data: settings }, { data: logRows }] = await Promise.all([
     supabase
       .from('digifinex_settings')
-      .select('symbol, amount, price, coupon_issued, coupon_used, updated_at')
+      .select(
+        'symbol, amount, price, coupon_issued, coupon_used, cron_enabled, updated_at',
+      )
       .eq('id', 1)
       .maybeSingle(),
     admin
@@ -43,10 +50,7 @@ export default async function CronConfigPage() {
       .limit(20),
   ]);
 
-  const initial: DigiFinexSettings | null = settings
-    ? (settings as DigiFinexSettings)
-    : null;
-
+  const row = settings ? (settings as SettingsRow) : null;
   const logs = (logRows ?? []) as RecentLogRow[];
 
   return (
@@ -66,8 +70,11 @@ export default async function CronConfigPage() {
       </header>
 
       <div className="space-y-6">
-        {initial ? (
-          <DigiFinexSettingsForm initial={initial} />
+        {row ? (
+          <>
+            <CronMasterToggle initialEnabled={row.cron_enabled} />
+            <DigiFinexSettingsForm initial={row} />
+          </>
         ) : (
           <div
             role="alert"
@@ -102,34 +109,32 @@ export default async function CronConfigPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {logs.map((row) => (
-                    <tr key={row.id} className="border-t border-bg-elevated">
+                  {logs.map((r) => (
+                    <tr key={r.id} className="border-t border-bg-elevated">
                       <td className="px-4 py-2 font-mono text-text-muted">
-                        {row.occurred_at.slice(0, 19).replace('T', ' ')}
+                        {r.occurred_at.slice(0, 19).replace('T', ' ')}
                       </td>
-                      <td className="px-4 py-2 font-mono">
-                        {row.job_name ?? '—'}
-                      </td>
-                      <td className="px-4 py-2 font-mono">{row.account ?? '—'}</td>
+                      <td className="px-4 py-2 font-mono">{r.job_name ?? '—'}</td>
+                      <td className="px-4 py-2 font-mono">{r.account ?? '—'}</td>
                       <td className="px-4 py-2 font-mono text-text-muted">
-                        {row.mode}
+                        {r.mode}
                       </td>
                       <td
                         className={`px-4 py-2 font-mono ${
-                          row.response_code === 0
+                          r.response_code === 0
                             ? 'text-signal-success'
-                            : row.response_code === null
+                            : r.response_code === null
                               ? 'text-text-muted'
                               : 'text-signal-danger'
                         }`}
                       >
-                        {row.response_code ?? '—'}
+                        {r.response_code ?? '—'}
                       </td>
                       <td className="px-4 py-2 font-mono text-text-muted">
-                        {row.coupon_remaining ?? '—'}
+                        {r.coupon_remaining ?? '—'}
                       </td>
                       <td className="px-4 py-2 font-mono text-text-muted">
-                        {row.order_id ?? row.error ?? '—'}
+                        {r.order_id ?? r.error ?? '—'}
                       </td>
                     </tr>
                   ))}

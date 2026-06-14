@@ -182,6 +182,40 @@ export async function POST(req: Request) {
     market = 'spot';
     mode = 'single';
 
+    // Master kill-switch. When cron_enabled is false, a real cron run does
+    // nothing (no order, no counter decrement). Dry-run still proceeds so the
+    // operator can preview while the switch is off.
+    if (!dryRun) {
+      const { data: flag } = await admin
+        .from('digifinex_settings')
+        .select('cron_enabled')
+        .eq('id', 1)
+        .maybeSingle();
+      if (!flag?.cron_enabled) {
+        await admin.from('digifinex_order_log').insert({
+          mode: 'skipped',
+          request_body: body,
+          digifinex_url: 'n/a',
+          response_status: null,
+          response_code: null,
+          response_body: null,
+          duration_ms: 0,
+          error: 'cron_disabled',
+          job_name: jobName,
+          account: accountNumber,
+          coupon_remaining: null,
+        });
+        return NextResponse.json(
+          {
+            job: jobName,
+            skipped: true,
+            reason: 'cron_disabled',
+          },
+          { status: 200 },
+        );
+      }
+    }
+
     // Singleton settings. On dry-run we read directly (no mutation).
     // On real runs we call the RPC, which decrements only for sell*.
     let settings: SettingsRow | null = null;
